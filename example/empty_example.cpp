@@ -1,8 +1,8 @@
-#include <libds/libds.hpp>
+#include <libds/vec.hpp>
+
 #include <iostream>
 
 auto
 main() -> int {
-    std::cout << name() << std::endl;
     return 0;
 }
