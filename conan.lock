@@ -1,0 +1,25 @@
+{
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "options": "",
+    "build_requires": [
+     "1"
+    ],
+    "path": "conanfile.py",
+    "context": "host"
+   },
+   "1": {
+    "ref": "catch2/3.1.0",
+    "options": "default_reporter=None\nshared=False\nwith_prefix=False",
+    "package_id": "621f8ed9d36e9db69daa31057ffcea8f00acbcd9",
+    "prev": "0",
+    "context": "host"
+   }
+  },
+  "revisions_enabled": false
+ },
+ "version": "0.4",
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Debug\ncompiler=gcc\ncompiler.libcxx=libstdc++11\ncompiler.version=12\nos=Windows\nos_build=Windows\n[options]\n[build_requires]\n[env]\n[conf]\ntools.cmake.cmaketoolchain:generator=Ninja\n",
+ "profile_build": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Release\ncompiler=gcc\ncompiler.libcxx=libstdc++11\ncompiler.version=12\nos=Windows\nos_build=Windows\n[options]\n[build_requires]\n[env]\n[conf]\ntools.cmake.cmaketoolchain:generator=Ninja\n"
+}
