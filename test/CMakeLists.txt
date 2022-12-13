@@ -17,7 +17,10 @@ include(Catch)
 
 # ---- Tests ----
 
-add_executable(libds_test source/libds_test.cpp)
+add_executable(
+  libds_test
+    source/vec.cpp
+)
 target_link_libraries(
     libds_test PRIVATE
     libds::libds

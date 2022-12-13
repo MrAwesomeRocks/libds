@@ -24,6 +24,7 @@
         ".env": "dotenv",
         "*.c": "c",
         ".clang-tidy": "yaml",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "string": "cpp"
     }
 }
