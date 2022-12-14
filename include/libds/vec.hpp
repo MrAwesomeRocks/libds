@@ -102,15 +102,31 @@ class vec {
     /**
      * @brief Copy constructor.
      *
-     * @param v The vector to copy to this one.
+     * @param other The vector to copy to this one.
      */
-    vec(const vec& orig) :
-        size_(orig.size_), capacity_(orig.capacity_), data_(alloc_(capacity_))
+    vec(const vec& other) :
+        size_(other.size_), capacity_(other.capacity_), data_(alloc_(capacity_))
     {
-        copy_(data_, orig.data_, capacity_);
+        copy_(data_, other.data_, capacity_);
     }
 
-    // copy assignment
+    /**
+     * @brief Move constructor.
+     *
+     * @param other The vector to move to this one.
+     */
+    vec(const vec&& other) noexcept :
+        size_(std::exchange(other.size_, 0)),
+        capacity_(std::exchange(other.capacity_, 0)),
+        data_(std::exchange(other.data_, nullptr))
+    {}
+
+    /**
+     * @brief Copy assignment operator.
+     *
+     * @param other The assigned object.
+     * @return The new object.
+     */
     vec&
     operator=(const vec& other)
     {
@@ -119,10 +135,9 @@ class vec {
             return *this;
 
         // we manage a heap-buffer resource
-        if (size_ != other.size_) // resource in *this cannot be reused
-        {
-            // NOLINTNEXTLINE(cppcoreguidelines-no-malloc)
-            std::free(data_);
+        if (size_ != other.size_) {
+            // resource in *this cannot be reused
+            std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
 
             // Preserve invariants
             data_ = static_cast<gsl::owner<T*>>(nullptr);
@@ -136,6 +151,32 @@ class vec {
         }
 
         copy_(data_, other.data_, capacity_);
+        return *this;
+    }
+
+    /**
+     * @brief Move assignment operator.
+     *
+     * @param other The assigned object.
+     * @return The new object.
+     */
+    vec&
+    operator=(vec&& other) noexcept
+    {
+        // Guard self-assignment
+        if (this == &other)
+            return *this;
+
+        // Free our resources
+        std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
+
+        // Leave the other in a valid state
+        size_ = std::exchange(other.size_, 0);
+        capacity_ = std::exchange(other.capacity_, 0);
+        data_ = std::exchange(
+            other.data_, nullptr
+        ); // NOLINT(cppcoreguidelines-owning-memory)
+
         return *this;
     }
 
