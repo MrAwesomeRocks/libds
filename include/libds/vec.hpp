@@ -39,12 +39,28 @@ class vec {
     [[nodiscard]] inline auto
     alloc_(size_t cap) const -> gsl::owner<T*>
     {
+        if (cap == 0)
+            return static_cast<gsl::owner<T*>>(nullptr);
+
         // NOLINTNEXTLINE(cppcoreguidelines-no-malloc,modernize-use-auto)
         gsl::owner<T*> ptr = static_cast<gsl::owner<T*>>(std::malloc(cap * sizeof(T)));
         if (ptr == nullptr)
             throw std::runtime_error("vec: could not allocate memory");
 
         return ptr;
+    }
+
+    /**
+     * @brief Copy two buffers, templated to this class.
+     *
+     * @param dest Where to copy to.
+     * @param src Where to copy from.
+     * @param size How many elements to copy.
+     */
+    inline auto
+    copy_(T* dest, T* src, size_t size) const -> void
+    {
+        std::memcpy(dest, src, size * sizeof(T));
     }
 
  public:
@@ -81,6 +97,46 @@ class vec {
         auto init_data = std::data(init);
         for (size_t i = 0; i < init.size(); i++)
             data_[i] = init_data[i];
+    }
+
+    /**
+     * @brief Copy constructor.
+     *
+     * @param v The vector to copy to this one.
+     */
+    vec(const vec& orig) :
+        size_(orig.size_), capacity_(orig.capacity_), data_(alloc_(capacity_))
+    {
+        copy_(data_, orig.data_, capacity_);
+    }
+
+    // copy assignment
+    vec&
+    operator=(const vec& other)
+    {
+        // Guard self assignment
+        if (this == &other)
+            return *this;
+
+        // we manage a heap-buffer resource
+        if (size_ != other.size_) // resource in *this cannot be reused
+        {
+            // NOLINTNEXTLINE(cppcoreguidelines-no-malloc)
+            std::free(data_);
+
+            // Preserve invariants
+            data_ = static_cast<gsl::owner<T*>>(nullptr);
+            size_ = 0;
+            capacity_ = 0;
+
+            // Allocate new data
+            data_ = alloc_(other.size_);
+            size_ = other.size_;
+            capacity_ = size_;
+        }
+
+        copy_(data_, other.data_, capacity_);
+        return *this;
     }
 
     /**
