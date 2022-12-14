@@ -13,6 +13,8 @@ project(
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
+find_package(Microsoft.GSL)
+
 # ---- Declare library ----
 
 add_library(libds_libds INTERFACE)
@@ -30,6 +32,9 @@ target_include_directories(
 )
 
 target_compile_features(libds_libds INTERFACE cxx_std_17)
+
+target_link_libraries(libds_libds
+  INTERFACE Microsoft.GSL::GSL)
 
 # ---- Install rules ----
 
