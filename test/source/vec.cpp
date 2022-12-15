@@ -4,7 +4,8 @@
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
 
-TEST_CASE("Name is libds", "[library]") {
+TEST_CASE("Vector construction", "[vec]")
+{
     ds::vec<int> arr;
 }
 

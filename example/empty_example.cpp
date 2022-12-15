@@ -3,6 +3,7 @@
 #include <iostream>
 
 auto
-main() -> int {
+main() -> int
+{
     return 0;
 }

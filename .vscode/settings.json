@@ -91,6 +91,7 @@
         "span": "cpp",
         "narrow": "cpp",
         "pointers": "cpp",
-        "assert": "cpp"
+        "assert": "cpp",
+        "byte": "cpp"
     }
 }
