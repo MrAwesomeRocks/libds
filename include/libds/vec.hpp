@@ -23,6 +23,8 @@ class vec {
 
     static constexpr size_type INITIAL_CAPACITY = 10;
 
+#pragma region "Helpers"
+
     /**
      * @brief Get the next size of the vector from the current size.
      *
@@ -71,7 +73,11 @@ class vec {
         std::memcpy(dest, src, size * sizeof(T));
     }
 
+#pragma endregion
+
  public:
+#pragma region "Constructors/Destructors and assignment operators"
+
     /**
      * @brief Construct a new empty vec object, with a given capacity.
      *
@@ -195,6 +201,10 @@ class vec {
      */
     ~vec() noexcept { std::free(data_); } // NOLINT(cppcoreguidelines-no-malloc)
 
+#pragma endregion
+
+#pragma region "Accessors"
+
     /**
      * @brief Get a reference to the nth element.
      *
@@ -258,32 +268,6 @@ class vec {
     }
 
     /**
-     * @brief Get the size of the vector.
-     *
-     * This is the number of used spaces within the vector.
-     *
-     * @return size_type The vector size.
-     */
-    [[nodiscard]] inline size_type
-    size() const noexcept
-    {
-        return size_;
-    }
-
-    /**
-     * @brief Get the capacity of the vector.
-     *
-     * This is the total size of the underlying array.
-     *
-     * @return size_type The vector capacity.
-     */
-    [[nodiscard]] inline size_type
-    capacity() const noexcept
-    {
-        return capacity_;
-    }
-
-    /**
      * @brief Get access to the underlying data vector.
      *
      * Guaranteed to be valid up to size() elements.
@@ -310,6 +294,50 @@ class vec {
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): We still own the data.
         return data_;
     }
+
+#pragma endregion
+
+#pragma region "Capacity"
+
+    /**
+     * @brief Check if the vector is empty.
+     *
+     * @return true Empty vector.
+     * @return false Non-empty vector.
+     */
+    [[nodiscard]] inline bool
+    empty() const noexcept
+    {
+        return size_ == 0;
+    }
+
+    /**
+     * @brief Get the size of the vector.
+     *
+     * This is the number of used spaces within the vector.
+     *
+     * @return size_type The vector size.
+     */
+    [[nodiscard]] inline size_type
+    size() const noexcept
+    {
+        return size_;
+    }
+
+    /**
+     * @brief Get the capacity of the vector.
+     *
+     * This is the total size of the underlying array.
+     *
+     * @return size_type The vector capacity.
+     */
+    [[nodiscard]] inline size_type
+    capacity() const noexcept
+    {
+        return capacity_;
+    }
+
+#pragma endregion
 };
 
 } // namespace ds
