@@ -282,6 +282,34 @@ class vec {
     {
         return capacity_;
     }
+
+    /**
+     * @brief Get access to the underlying data vector.
+     *
+     * Guaranteed to be valid up to size() elements.
+     *
+     * @return T* The underlying vector of data.
+     */
+    [[nodiscard]] inline T*
+    data() noexcept
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): We still own the data.
+        return data_;
+    }
+
+    /**
+     * @brief Get access to the underlying data vector.
+     *
+     * Guaranteed to be valid up to size() elements.
+     *
+     * @return const T* The underlying vector of data.
+     */
+    [[nodiscard]] inline const T*
+    data() const noexcept
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): We still own the data.
+        return data_;
+    }
 };
 
 } // namespace ds
