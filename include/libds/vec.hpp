@@ -23,7 +23,7 @@ class vec {
      * @return size_t The next size of the vector.
      */
     [[nodiscard]] inline auto
-    next_size_(size_t size) const -> size_t
+    get_next_size_(size_t size) const -> size_t
     {
         // 1.5x size
         // https://web.archive.org/web/20150806162750/http://www.gahcep.com/cpp-internals-stl-vector-part-1/
@@ -135,7 +135,7 @@ class vec {
             return *this;
 
         // we manage a heap-buffer resource
-        if (size_ != other.size_) {
+        if (capacity_ < other.size_) {
             // resource in *this cannot be reused
             std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
 
