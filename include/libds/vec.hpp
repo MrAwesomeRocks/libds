@@ -15,6 +15,7 @@ template <class T>
 class vec {
  public:
     using size_type = std::size_t;
+    using iterator = T*;
 
  private:
     size_type size_;
@@ -335,6 +336,54 @@ class vec {
     capacity() const noexcept
     {
         return capacity_;
+    }
+
+#pragma endregion
+
+#pragma region "Iterators"
+
+    /**
+     * @brief Get an iterator pointing to the beginning of this vector.
+     *
+     * @return iterator The iterator.
+     */
+    [[nodiscard]] inline iterator
+    begin() noexcept
+    {
+        return data_;
+    }
+
+    /**
+     * @brief Get an iterator pointing to the beginning of this vector.
+     *
+     * @return iterator The iterator.
+     */
+    [[nodiscard]] inline const iterator
+    begin() const noexcept
+    {
+        return data_;
+    }
+
+    /**
+     * @brief Get an iterator pointing to the end of this vector.
+     *
+     * @return iterator The iterator.
+     */
+    [[nodiscard]] inline iterator
+    end() noexcept
+    {
+        return data_ + size_;
+    }
+
+    /**
+     * @brief Get an iterator pointing to the end of this vector.
+     *
+     * @return iterator The iterator.
+     */
+    [[nodiscard]] inline const iterator
+    end() const noexcept
+    {
+        return data_ + size_;
     }
 
 #pragma endregion
