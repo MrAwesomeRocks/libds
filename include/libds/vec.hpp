@@ -269,6 +269,50 @@ class vec {
     }
 
     /**
+     * @brief Get the first element.
+     *
+     * @return T& A reference to the first element.
+     */
+    [[nodiscard]] inline T&
+    front() noexcept
+    {
+        return data_[0];
+    }
+
+    /**
+     * @brief Get the first element.
+     *
+     * @return T& A reference to the first element.
+     */
+    [[nodiscard]] inline const T&
+    front() const noexcept
+    {
+        return data_[0];
+    }
+
+    /**
+     * @brief Get the last element.
+     *
+     * @return T& A reference to the last element.
+     */
+    [[nodiscard]] inline T&
+    back() noexcept
+    {
+        return data_[size_ - 1];
+    }
+
+    /**
+     * @brief Get the last element.
+     *
+     * @return T& A reference to the last element.
+     */
+    [[nodiscard]] inline const T&
+    back() const noexcept
+    {
+        return data_[size_ - 1];
+    }
+
+    /**
      * @brief Get access to the underlying data vector.
      *
      * Guaranteed to be valid up to size() elements.
