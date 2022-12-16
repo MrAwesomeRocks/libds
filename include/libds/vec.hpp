@@ -30,7 +30,7 @@ class vec {
      * @return size_type The next size of the vector.
      */
     [[nodiscard]] inline size_type
-    get_next_size_(size_type size) const
+    get_next_size_(size_type size) const noexcept
     {
         // 1.5x size
         // https://web.archive.org/web/20150806162750/http://www.gahcep.com/cpp-internals-stl-vector-part-1/
@@ -66,7 +66,7 @@ class vec {
      * @param size How many elements to copy.
      */
     inline void
-    copy_(T* dest, T* src, size_type size) const
+    copy_(T* dest, T* src, size_type size) const noexcept
     {
         std::memcpy(dest, src, size * sizeof(T));
     }
@@ -191,7 +191,7 @@ class vec {
     /**
      * @brief Destroy the vec object. Frees the internal array.
      */
-    ~vec() { std::free(data_); } // NOLINT(cppcoreguidelines-no-malloc)
+    ~vec() noexcept { std::free(data_); } // NOLINT(cppcoreguidelines-no-malloc)
 
     /**
      * @brief Get a reference to the nth element.
@@ -202,7 +202,7 @@ class vec {
      * @return T& The element at position pos.
      */
     [[nodiscard]] inline T&
-    operator[](size_type pos)
+    operator[](size_type pos) noexcept
     {
         return data_[pos];
     }
@@ -216,7 +216,7 @@ class vec {
      * @return const T& The element at position pos.
      */
     [[nodiscard]] inline const T&
-    operator[](size_type pos) const
+    operator[](size_type pos) const noexcept
     {
         return data_[pos];
     }
@@ -263,7 +263,7 @@ class vec {
      * @return size_type The vector size.
      */
     [[nodiscard]] inline size_type
-    size() const
+    size() const noexcept
     {
         return size_;
     }
@@ -276,7 +276,7 @@ class vec {
      * @return size_type The vector capacity.
      */
     [[nodiscard]] inline size_type
-    capacity() const
+    capacity() const noexcept
     {
         return capacity_;
     }
