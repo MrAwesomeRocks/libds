@@ -1,8 +1,11 @@
-#pragma once
+#ifndef LIBDS_VEC_HPP
+#define LIBDS_VEC_HPP
+
+#include <gsl/gsl>
 
 #include <cstdlib>
 #include <cstring>
-#include <gsl/gsl>
+
 #include <stdexcept>
 #include <string>
 
@@ -10,23 +13,28 @@ namespace ds {
 
 template <class T>
 class vec {
-    size_t size_;
-    size_t capacity_;
+ public:
+    using size_type = std::size_t;
+
+ private:
+    size_type size_;
+    size_type capacity_;
     gsl::owner<T*> data_;
 
-    static constexpr size_t INITIAL_CAPACITY = 10;
+    static constexpr size_type INITIAL_CAPACITY = 10;
 
     /**
      * @brief Get the next size of the vector from the current size.
      *
      * @param size The current size.
-     * @return size_t The next size of the vector.
+     * @return size_type The next size of the vector.
      */
-    [[nodiscard]] inline auto
-    get_next_size_(size_t size) const -> size_t
+    [[nodiscard]] inline size_type
+    get_next_size_(size_type size) const
     {
         // 1.5x size
         // https://web.archive.org/web/20150806162750/http://www.gahcep.com/cpp-internals-stl-vector-part-1/
+        // NOLINTNEXTLINE(hicpp-signed-bitwise): size_t is guaranteed to be unsigned
         return size + (size >> 2);
     }
 
@@ -36,8 +44,8 @@ class vec {
      * @param cap The amount of elements this should be able to hold.
      * @return A pointer to the data for this vector.
      */
-    [[nodiscard]] inline auto
-    alloc_(size_t cap) const -> gsl::owner<T*>
+    [[nodiscard]] inline gsl::owner<T*>
+    alloc_(size_type cap) const
     {
         if (cap == 0)
             return static_cast<gsl::owner<T*>>(nullptr);
@@ -57,8 +65,8 @@ class vec {
      * @param src Where to copy from.
      * @param size How many elements to copy.
      */
-    inline auto
-    copy_(T* dest, T* src, size_t size) const -> void
+    inline void
+    copy_(T* dest, T* src, size_type size) const
     {
         std::memcpy(dest, src, size * sizeof(T));
     }
@@ -69,7 +77,7 @@ class vec {
      *
      * @param capacity How many elements should this vector be able to hold initially.
      */
-    explicit vec(size_t capacity = INITIAL_CAPACITY) :
+    explicit vec(size_type capacity = INITIAL_CAPACITY) :
         size_(0), capacity_(capacity), data_(alloc_(capacity_))
     {}
 
@@ -79,10 +87,10 @@ class vec {
      * @param size The size of the vec.
      * @param elem The element to fill the vector with
      */
-    explicit vec(size_t size, T elem) :
+    explicit vec(size_type size, T elem) :
         size_(size), capacity_(size), data_(alloc_(capacity_))
     {
-        for (size_t i = 0; i < size_; i++)
+        for (size_type i = 0; i < size_; i++)
             data_[i] = elem;
     }
 
@@ -91,11 +99,11 @@ class vec {
      *
      * @param init The initializer list with vector elements.
      */
-    explicit vec(std::initializer_list<T> init) :
+    vec(std::initializer_list<T> init) :
         size_(init.size()), capacity_(init.size()), data_(alloc_(capacity_))
     {
         auto init_data = std::data(init);
-        for (size_t i = 0; i < init.size(); i++)
+        for (size_type i = 0; i < init.size(); i++)
             data_[i] = init_data[i];
     }
 
@@ -173,9 +181,9 @@ class vec {
         // Leave the other in a valid state
         size_ = std::exchange(other.size_, 0);
         capacity_ = std::exchange(other.capacity_, 0);
-        data_ = std::exchange(
+        data_ = std::exchange( // NOLINT(cppcoreguidelines-owning-memory)
             other.data_, nullptr
-        ); // NOLINT(cppcoreguidelines-owning-memory)
+        );
 
         return *this;
     }
@@ -193,8 +201,8 @@ class vec {
      * @param pos The position of the desired element
      * @return T& The element at position pos.
      */
-    [[nodiscard]] inline auto
-    operator[](size_t pos) -> T&
+    [[nodiscard]] inline T&
+    operator[](size_type pos)
     {
         return data_[pos];
     }
@@ -207,8 +215,8 @@ class vec {
      * @param pos The position of the desired element
      * @return const T& The element at position pos.
      */
-    [[nodiscard]] inline auto
-    operator[](size_t pos) const -> const T&
+    [[nodiscard]] inline const T&
+    operator[](size_type pos) const
     {
         return data_[pos];
     }
@@ -222,8 +230,8 @@ class vec {
      * @exception std::out_of_range Index out of range of vector.
      * @return T& The element at position pos.
      */
-    [[nodiscard]] inline auto
-    at(size_t pos) -> T&
+    [[nodiscard]] inline T&
+    at(size_type pos)
     {
         if (pos > size_)
             throw std::out_of_range("vec: index out of range!");
@@ -239,8 +247,8 @@ class vec {
      * @exception std::out_of_range Index out of range of vector.
      * @return  The element at position pos.
      */
-    [[nodiscard]] inline auto
-    at(size_t pos) const -> const T&
+    [[nodiscard]] inline const T&
+    at(size_type pos) const
     {
         if (pos > size_)
             throw std::out_of_range("vec: index out of range!");
@@ -252,10 +260,10 @@ class vec {
      *
      * This is the number of used spaces within the vector.
      *
-     * @return size_t The vector size.
+     * @return size_type The vector size.
      */
-    [[nodiscard]] inline auto
-    size() const -> size_t
+    [[nodiscard]] inline size_type
+    size() const
     {
         return size_;
     }
@@ -265,13 +273,15 @@ class vec {
      *
      * This is the total size of the underlying array.
      *
-     * @return size_t The vector capacity.
+     * @return size_type The vector capacity.
      */
-    [[nodiscard]] inline auto
-    capacity() const -> size_t
+    [[nodiscard]] inline size_type
+    capacity() const
     {
         return capacity_;
     }
 };
 
 } // namespace ds
+
+#endif // LIBDS_VEC_HPP
