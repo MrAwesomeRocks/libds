@@ -103,8 +103,10 @@ class vec {
         size_(init.size()), capacity_(init.size()), data_(alloc_(capacity_))
     {
         auto init_data = std::data(init);
-        for (size_type i = 0; i < init.size(); i++)
+        for (size_type i = 0; i < init.size(); i++) {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
             data_[i] = init_data[i];
+        }
     }
 
     /**
@@ -233,7 +235,7 @@ class vec {
     [[nodiscard]] inline T&
     at(size_type pos)
     {
-        if (pos > size_)
+        if (pos >= size_)
             throw std::out_of_range("vec: index out of range!");
         return data_[pos];
     }
@@ -250,7 +252,7 @@ class vec {
     [[nodiscard]] inline const T&
     at(size_type pos) const
     {
-        if (pos > size_)
+        if (pos >= size_)
             throw std::out_of_range("vec: index out of range!");
         return data_[pos];
     }
