@@ -334,3 +334,26 @@ TEST_CASE("Clearing", "[vec]")
     CHECK(arr.capacity() == 3);
     CHECK(arr.begin() == arr.end());
 }
+
+TEST_CASE("Insertion", "[vec]")
+{
+    ds::vec<unsigned> arr{1, 2, 3};
+
+    REQUIRE(arr.size() == 3);
+    REQUIRE(arr.capacity() == 3);
+
+    arr.insert(0, 0);
+
+    CHECK(arr == ds::vec<unsigned>{0, 1, 2, 3});
+    CHECK(arr.capacity() == 4);
+
+    arr.insert(arr.size(), 4);
+
+    CHECK(arr == ds::vec<unsigned>{0, 1, 2, 3, 4});
+    CHECK(arr.capacity() == 6);
+
+    arr.insert(2, 555);
+
+    CHECK(arr == ds::vec<unsigned>{0, 1, 555, 2, 3, 4});
+    CHECK(arr.capacity() == 6);
+}

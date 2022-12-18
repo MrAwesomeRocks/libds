@@ -27,18 +27,21 @@ class vec {
 #pragma region "Helpers"
 
     /**
-     * @brief Get the next size of the vector from the current size.
+     * @brief Get the next capacity of the vector from the current capacity.
      *
-     * @param size The current size.
-     * @return size_type The next size of the vector.
+     * @param cap The current capacity.
+     * @return size_type The next capacity of the vector.
      */
     [[nodiscard]] inline size_type
-    get_next_size_(size_type size) const noexcept
+    next_capacity_(size_type cap) const noexcept
     {
-        // 1.5x size
+        if (cap <= 1)
+            return 2;
+
+        // 1.5 * cap
         // https://web.archive.org/web/20150806162750/http://www.gahcep.com/cpp-internals-stl-vector-part-1/
         // NOLINTNEXTLINE(hicpp-signed-bitwise): size_t is guaranteed to be unsigned
-        return size + (size >> 2);
+        return cap + (cap >> 1);
     }
 
     /**
@@ -108,7 +111,29 @@ class vec {
     inline void
     copy_(T* dest, T* src, size_type size) const noexcept
     {
-        std::memcpy(dest, src, size * sizeof(T));
+        std::memmove(dest, src, size * sizeof(T));
+    }
+
+    /**
+     * @brief Shift all elements from @p start to end() over @p places places.
+     *
+     * @param start Where to start shifting elements.
+     * @param places How many places to shift the elements.
+     */
+    inline void
+    shift_(size_type start, size_type places)
+    {
+        // Check if we have to resize
+        size_type new_cap = capacity_;
+        while (size_ + places > new_cap)
+            new_cap = next_capacity_(new_cap);
+
+        reserve(new_cap);
+
+        // Shift elements down
+        copy_(&data_[start + places], &data_[start], size_ - start);
+
+        size_ += places;
     }
 
 #pragma endregion
@@ -496,6 +521,62 @@ class vec {
     clear() noexcept
     {
         size_ = 0;
+    }
+
+    /**
+     * @brief Insert an element @p elem at position @p pos.
+     *
+     * Copies the element into the vector.
+     * Can insert one past the end of the vector (at size());
+     *
+     * @param pos The position to insert the element in (zero indexed).
+     * @param elem The element to insert.
+     * @return An iterator pointing to the new element.
+     */
+    inline iterator
+    insert(size_type pos, const T& elem)
+    {
+        shift_(pos, 1);
+        data_[pos] = elem;
+
+        return data_ + pos;
+    }
+
+    /**
+     * @brief Insert an element @p elem at position @p pos.
+     *
+     * Moves the element into the vector.
+     * Can insert one past the end of the vector (at size());
+     *
+     * @param pos The position to insert the element in (zero indexed).
+     * @param elem The element to insert.
+     * @return An iterator pointing to the new element.
+     */
+    inline iterator
+    insert(size_type pos, T&& elem)
+    {
+        shift_(pos, 1);
+        data_[pos] = elem;
+
+        return data_ + pos;
+    }
+
+#pragma endregion
+
+#pragma region "Operators"
+
+    friend bool
+    operator==(const ds::vec<T>& lhs, const ds::vec<T>& rhs)
+    {
+        if (lhs.size_ != rhs.size_)
+            return false;
+
+        for (size_t i = 0; i < lhs.size_; i++) {
+            if (lhs[i] != rhs[i])
+                return false;
+        }
+
+        return true;
     }
 
 #pragma endregion
