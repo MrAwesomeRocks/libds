@@ -93,6 +93,7 @@
         "narrow": "cpp",
         "pointers": "cpp",
         "assert": "cpp",
-        "byte": "cpp"
+        "byte": "cpp",
+        "string_span": "cpp"
     }
 }
