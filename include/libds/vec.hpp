@@ -24,6 +24,7 @@ class vec {
     gsl::owner<T*> data_;
 
     static constexpr size_type INITIAL_CAPACITY = 10;
+    static constexpr gsl::owner<T*> OWNED_NULL = static_cast<gsl::owner<T*>>(nullptr);
 
 #pragma region "Helpers"
 
@@ -52,7 +53,7 @@ class vec {
     alloc_(size_type cap) const
     {
         if (cap == 0)
-            return static_cast<gsl::owner<T*>>(nullptr);
+            return OWNED_NULL;
 
         // NOLINTNEXTLINE(cppcoreguidelines-no-malloc,modernize-use-auto)
         gsl::owner<T*> ptr = static_cast<gsl::owner<T*>>(std::malloc(cap * sizeof(T)));
@@ -98,7 +99,7 @@ class vec {
             data_[i].~T();
 
         std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
-        data_ = static_cast<gsl::owner<T*>>(nullptr);
+        data_ = OWNED_NULL;
     }
 
     /**
@@ -175,7 +176,7 @@ class vec {
     vec(vec&& other) noexcept :
         size_(std::exchange(other.size_, 0U)),
         capacity_(std::exchange(other.capacity_, 0U)),
-        data_(std::exchange(other.data_, nullptr))
+        data_(static_cast<gsl::owner<T*>>(std::exchange(other.data_, OWNED_NULL)))
     {}
 
     /**
@@ -220,8 +221,10 @@ class vec {
         // Leave the other in a valid state
         size_ = std::exchange(other.size_, 0);
         capacity_ = std::exchange(other.capacity_, 0);
-        data_ = std::exchange( // NOLINT(cppcoreguidelines-owning-memory)
-            other.data_, nullptr
+        data_ = static_cast<gsl::owner<T*>>(
+            std::exchange(
+                other.data_, OWNED_NULL
+            )
         );
 
         return *this;
@@ -230,7 +233,7 @@ class vec {
     /**
      * @brief Destroy the vec object. Frees the internal array.
      */
-    ~vec() noexcept { free_(); } // NOLINT(cppcoreguidelines-no-malloc)
+    ~vec() noexcept { free_(); }
 
 #pragma endregion
 
