@@ -172,9 +172,9 @@ class vec {
      *
      * @param other The vector to move to this one.
      */
-    vec(const vec&& other) noexcept :
-        size_(std::exchange(other.size_, 0)),
-        capacity_(std::exchange(other.capacity_, 0)),
+    vec(vec&& other) noexcept :
+        size_(std::exchange(other.size_, 0U)),
+        capacity_(std::exchange(other.capacity_, 0U)),
         data_(std::exchange(other.data_, nullptr))
     {}
 
