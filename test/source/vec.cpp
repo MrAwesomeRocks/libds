@@ -278,3 +278,45 @@ TEST_CASE("Deconstructor", "[vec]")
     for (const bool& flag : deconstructed)
         CHECK(flag);
 }
+
+TEST_CASE("Manually changing capacity", "[vec]")
+{
+    ds::vec<unsigned> vec1(5, 1);
+
+    REQUIRE(vec1.capacity() == 5);
+    REQUIRE(vec1.size() == 5);
+
+    SECTION("Reserve")
+    {
+        vec1.reserve(1);
+
+        CHECK(vec1.capacity() == 5);
+        CHECK(vec1.size() == 5);
+        for (const auto& val : vec1)
+            CHECK(val == 1);
+
+        vec1.reserve(10);
+
+        CHECK(vec1.capacity() == 10);
+        CHECK(vec1.size() == 5);
+        for (const auto& val : vec1)
+            CHECK(val == 1);
+    }
+
+    SECTION("Shrink")
+    {
+        vec1.shrink_to_fit();
+
+        CHECK(vec1.capacity() == 5);
+        CHECK(vec1.size() == 5);
+        for (const auto& val : vec1)
+            CHECK(val == 1);
+
+        vec1.shrink_to_fit();
+
+        CHECK(vec1.capacity() == 5);
+        CHECK(vec1.size() == 5);
+        for (const auto& val : vec1)
+            CHECK(val == 1);
+    }
+}

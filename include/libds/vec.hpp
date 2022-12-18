@@ -283,7 +283,7 @@ class vec {
      *
      * @param pos The position of the desired element
      * @exception std::out_of_range Index out of range of vector.
-     * @return  The element at position pos.
+     * @return T& The element at position pos.
      */
     [[nodiscard]] inline const T&
     at(size_type pos) const
@@ -372,8 +372,7 @@ class vec {
     /**
      * @brief Check if the vector is empty.
      *
-     * @return true Empty vector.
-     * @return false Non-empty vector.
+     * @return bool Whether or not the vector is empty.
      */
     [[nodiscard]] inline bool
     empty() const noexcept
@@ -405,6 +404,31 @@ class vec {
     capacity() const noexcept
     {
         return capacity_;
+    }
+
+    /**
+     * @brief Resize the vector to be able to hold at least @p new_cap elements.
+     *
+     * Does nothing if the desired capacity is less than the current capacity.
+     *
+     * @param new_cap The new desired capacity of the vector.
+     */
+    inline void
+    reserve(size_type new_cap)
+    {
+        if (new_cap > capacity_)
+            resize_(new_cap);
+    }
+
+    /**
+     * @brief Remove any unused space from this vector.
+     *
+     * This sets capacity() to size();
+     */
+    inline void
+    shrink_to_fit()
+    {
+        resize_(size_);
     }
 
 #pragma endregion
