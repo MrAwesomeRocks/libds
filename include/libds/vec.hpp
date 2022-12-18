@@ -482,6 +482,23 @@ class vec {
     }
 
 #pragma endregion
+
+#pragma region "Modifiers"
+
+    /* Everthing here changes vector size */
+
+    /**
+     * @brief Clear the contents of the vector.
+     *
+     * Does not change the capacity.
+     */
+    inline void
+    clear() noexcept
+    {
+        size_ = 0;
+    }
+
+#pragma endregion
 };
 
 } // namespace ds

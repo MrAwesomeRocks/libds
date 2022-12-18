@@ -320,3 +320,17 @@ TEST_CASE("Manually changing capacity", "[vec]")
             CHECK(val == 1);
     }
 }
+
+TEST_CASE("Clearing", "[vec]")
+{
+    ds::vec arr{1, 2, 3};
+
+    REQUIRE(arr.size() == 3);
+    REQUIRE(arr.capacity() == 3);
+
+    arr.clear();
+
+    CHECK(arr.empty());
+    CHECK(arr.capacity() == 3);
+    CHECK(arr.begin() == arr.end());
+}
