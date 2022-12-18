@@ -1,13 +1,12 @@
 #ifndef LIBDS_VEC_HPP
 #define LIBDS_VEC_HPP
 
-#include <gsl/gsl>
-
 #include <cstdlib>
 #include <cstring>
 
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 namespace ds {
 
@@ -21,10 +20,9 @@ class vec {
  private:
     size_type size_;
     size_type capacity_;
-    gsl::owner<T*> data_;
+    T* data_;
 
     static constexpr size_type INITIAL_CAPACITY = 10;
-    static constexpr gsl::owner<T*> OWNED_NULL = static_cast<gsl::owner<T*>>(nullptr);
 
 #pragma region "Helpers"
 
@@ -49,14 +47,14 @@ class vec {
      * @param cap The amount of elements this should be able to hold.
      * @return A pointer to the data for this vector.
      */
-    [[nodiscard]] inline gsl::owner<T*>
+    [[nodiscard]] inline T*
     alloc_(size_type cap) const
     {
         if (cap == 0)
-            return OWNED_NULL;
+            return nullptr;
 
         // NOLINTNEXTLINE(cppcoreguidelines-no-malloc,modernize-use-auto)
-        gsl::owner<T*> ptr = static_cast<gsl::owner<T*>>(std::malloc(cap * sizeof(T)));
+        auto* ptr = static_cast<T*>(std::malloc(cap * sizeof(T)));
         if (ptr == nullptr)
             throw std::runtime_error("vec: could not allocate memory");
 
@@ -75,11 +73,9 @@ class vec {
             free_();
 
         // NOLINTNEXTLINE(modernize-use-auto)
-        gsl::owner<T*> ptr = static_cast<gsl::owner<T*>>(
-            std::realloc( // NOLINT(cppcoreguidelines-no-malloc)
-                data_, new_cap * sizeof(T)
-            )
-        );
+        auto* ptr = static_cast<T*>(std::realloc( // NOLINT(cppcoreguidelines-no-malloc)
+            data_, new_cap * sizeof(T)
+        ));
 
         if (ptr == nullptr)
             throw std::runtime_error("vec: could not allocate memory");
@@ -99,7 +95,7 @@ class vec {
             data_[i].~T();
 
         std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
-        data_ = OWNED_NULL;
+        data_ = nullptr;
     }
 
     /**
@@ -176,7 +172,7 @@ class vec {
     vec(vec&& other) noexcept :
         size_(std::exchange(other.size_, 0U)),
         capacity_(std::exchange(other.capacity_, 0U)),
-        data_(static_cast<gsl::owner<T*>>(std::exchange(other.data_, OWNED_NULL)))
+        data_(std::exchange(other.data_, nullptr))
     {}
 
     /**
@@ -221,11 +217,7 @@ class vec {
         // Leave the other in a valid state
         size_ = std::exchange(other.size_, 0);
         capacity_ = std::exchange(other.capacity_, 0);
-        data_ = static_cast<gsl::owner<T*>>(
-            std::exchange(
-                other.data_, OWNED_NULL
-            )
-        );
+        data_ = std::exchange(other.data_, nullptr);
 
         return *this;
     }

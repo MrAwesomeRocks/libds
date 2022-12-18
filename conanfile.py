@@ -9,7 +9,8 @@ class Recipe(ConanFile):
         self.folders.generators = "conan"
 
     def requirements(self):
-        self.requires("ms-gsl/4.0.0")
+        # self.requires("ms-gsl/4.0.0")
+        pass
 
     def build_requirements(self):
         self.test_requires("catch2/3.1.0")

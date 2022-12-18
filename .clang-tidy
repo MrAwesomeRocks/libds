@@ -20,12 +20,15 @@ Checks: "\
   fuchsia-virtual-inheritance,\
   google-runtime-int,\
   -cppcoreguidelines-avoid-magic-numbers,\
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,\
   -hicpp-braces-around-statements,\
   -hicpp-no-malloc,\
   -hicpp-use-auto,\
   -google-readability-braces-around-statements,\
   -modernize-use-trailing-return-type,\
   -hicpp-invalid-access-moved,\
+  -hicpp-special-member-functions,\
+  -cppcoreguidelines-owning-memory,\
   -misc-non-private-member-variables-in-classes"
 WarningsAsErrors: false
 HeaderFilterRegex: ""

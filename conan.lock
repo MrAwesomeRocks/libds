@@ -3,23 +3,13 @@
   "nodes": {
    "0": {
     "options": "",
-    "requires": [
-     "1"
-    ],
     "build_requires": [
-     "2"
+     "1"
     ],
     "path": "conanfile.py",
     "context": "host"
    },
    "1": {
-    "ref": "ms-gsl/4.0.0",
-    "options": "",
-    "package_id": "5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9",
-    "prev": "0",
-    "context": "host"
-   },
-   "2": {
     "ref": "catch2/3.1.0",
     "options": "default_reporter=None\nshared=False\nwith_prefix=False",
     "package_id": "621f8ed9d36e9db69daa31057ffcea8f00acbcd9",
