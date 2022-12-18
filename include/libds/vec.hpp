@@ -16,6 +16,7 @@ class vec {
  public:
     using size_type = std::size_t;
     using iterator = T*;
+    using const_iterator = const T*;
 
  private:
     size_type size_;
@@ -59,6 +60,34 @@ class vec {
             throw std::runtime_error("vec: could not allocate memory");
 
         return ptr;
+    }
+
+    /**
+     * @brief Resize the internal data buffer.
+     *
+     * @param cap The amount of elements this should be able to hold.
+     */
+    inline void
+    resize_(size_type new_cap)
+    {
+        if (new_cap == 0) {
+            std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
+            data_ = static_cast<gsl::owner<T*>>(nullptr);
+            return;
+        }
+
+        // NOLINTNEXTLINE(modernize-use-auto)
+        gsl::owner<T*> ptr = static_cast<gsl::owner<T*>>(
+            std::realloc( // NOLINT(cppcoreguidelines-no-malloc)
+                data_, new_cap * sizeof(T)
+            )
+        );
+
+        if (ptr == nullptr)
+            throw std::runtime_error("vec: could not allocate memory");
+
+        data_ = ptr;
+        capacity_ = new_cap;
     }
 
     /**
@@ -154,17 +183,8 @@ class vec {
         // we manage a heap-buffer resource
         if (capacity_ < other.size_) {
             // resource in *this cannot be reused
-            std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
-
-            // Preserve invariants
-            data_ = static_cast<gsl::owner<T*>>(nullptr);
-            size_ = 0;
-            capacity_ = 0;
-
-            // Allocate new data
-            data_ = alloc_(other.size_);
+            resize_(other.size_);
             size_ = other.size_;
-            capacity_ = size_;
         }
 
         copy_(data_, other.data_, capacity_);
@@ -322,8 +342,8 @@ class vec {
     [[nodiscard]] inline T*
     data() noexcept
     {
-        // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): We still own the data.
-        return data_;
+        // We still own the data, by the definition of this fn
+        return static_cast<T*>(data_);
     }
 
     /**
@@ -336,8 +356,8 @@ class vec {
     [[nodiscard]] inline const T*
     data() const noexcept
     {
-        // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): We still own the data.
-        return data_;
+        // We still own the data, by the definition of this fn
+        return static_cast<T*>(data_);
     }
 
 #pragma endregion
@@ -394,7 +414,8 @@ class vec {
     [[nodiscard]] inline iterator
     begin() noexcept
     {
-        return data_;
+        // We still own the data, by the definition of this fn
+        return static_cast<T*>(data_);
     }
 
     /**
@@ -402,10 +423,11 @@ class vec {
      *
      * @return iterator The iterator.
      */
-    [[nodiscard]] inline const iterator
+    [[nodiscard]] inline const_iterator
     begin() const noexcept
     {
-        return data_;
+        // We still own the data, by the definition of this fn
+        return static_cast<T*>(data_);
     }
 
     /**
@@ -424,7 +446,7 @@ class vec {
      *
      * @return iterator The iterator.
      */
-    [[nodiscard]] inline const iterator
+    [[nodiscard]] inline const_iterator
     end() const noexcept
     {
         return data_ + size_;
