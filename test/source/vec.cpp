@@ -2,6 +2,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+// NOLINTBEGIN(modernize-loop-convert)
+
 TEST_CASE("Accessors", "[vec]")
 {
     ds::vec<unsigned> arr{1, 2, 3, 4, 5};
@@ -34,6 +36,12 @@ TEST_CASE("Accessors", "[vec]")
         for (size_t i = 0; i < arr.size(); i++)
             CHECK(data[i] == i + 1);
     }
+
+    SECTION("front/back")
+    {
+        CHECK(arr.front() == 1);
+        CHECK(arr.back() == 5);
+    }
 }
 
 TEST_CASE("Mutators", "[vec]")
@@ -50,11 +58,7 @@ TEST_CASE("Mutators", "[vec]")
         for (unsigned i = 0; i < arr.size(); i++)
             arr[i] = i;
 
-        // These are UB but shouldn't fail.
-        CHECK_NOTHROW(arr[5] = 5);
-        CHECK_NOTHROW(arr[6] = 6);
-
-        for (size_t i = 0; i < 6; i++)
+        for (size_t i = 0; i < arr.size(); i++)
             CHECK(arr[i] == i);
     }
 
@@ -63,7 +67,7 @@ TEST_CASE("Mutators", "[vec]")
         for (unsigned i = 0; i < arr.size(); i++)
             arr.at(i) = 0;
 
-        // These are UB but shouldn't fail.
+        // These are UB and should fail.
         CHECK_THROWS_AS(arr.at(5) = 0, std::out_of_range);
         CHECK_THROWS_AS(arr.at(6) = 0, std::out_of_range);
 
@@ -77,7 +81,20 @@ TEST_CASE("Mutators", "[vec]")
         for (unsigned i = 0; i < arr.size(); i++)
             data[i] = i;
 
-        for (size_t i = 0; i < 6; i++)
+        for (size_t i = 0; i < arr.size(); i++)
             CHECK(data[i] == i);
     }
+
+    SECTION("front/back")
+    {
+        arr.front() = 256;
+        CHECK(arr.front() == 256);
+        CHECK(arr[0] == 256);
+
+        arr.back() = 512;
+        CHECK(arr.back() == 512);
+        CHECK(arr[arr.size() - 1] == 512);
+    }
 }
+
+// NOLINTEND(modernize-loop-convert)
