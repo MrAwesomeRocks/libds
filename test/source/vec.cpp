@@ -99,6 +99,36 @@ TEST_CASE("Mutators", "[vec]")
 
 // NOLINTEND(modernize-loop-convert)
 
+TEST_CASE("Iterators", "[vec]")
+{
+    ds::vec<unsigned> arr(5, 0);
+
+    REQUIRE(arr.size() == 5);
+    REQUIRE(arr.capacity() == 5);
+    for (size_t i = 0; i < arr.size(); i++) // NOLINT(modernize-loop-convert)
+        REQUIRE(arr[i] == 0);
+
+    SECTION("Explicit iterator")
+    {
+        // NOLINTNEXTLINE(modernize-loop-convert)
+        for (auto* it = arr.begin(); it != arr.end(); it++)
+            *it = 1;
+
+        // NOLINTNEXTLINE(modernize-loop-convert)
+        for (auto* it = arr.begin(); it != arr.end(); it++)
+            CHECK(*it == 1);
+    }
+
+    SECTION("For-each loop")
+    {
+        for (auto& val : arr)
+            val = 2;
+
+        for (const auto& val : arr)
+            CHECK(val == 2);
+    }
+}
+
 TEST_CASE("Copy things", "[vec]")
 {
     ds::vec<unsigned> vec1{1, 2, 3, 4, 5};
