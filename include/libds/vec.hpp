@@ -191,12 +191,11 @@ class vec {
         if (this == &other)
             return *this;
 
-        // we manage a heap-buffer resource
-        if (capacity_ < other.size_) {
-            // resource in *this cannot be reused
+        // Check if we can reuse our array
+        if (capacity_ < other.size_)
             resize_(other.size_);
-            size_ = other.size_;
-        }
+
+        size_ = other.size_;
 
         copy_(data_, other.data_, capacity_);
         return *this;
