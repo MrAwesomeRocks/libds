@@ -70,11 +70,8 @@ class vec {
     inline void
     resize_(size_type new_cap)
     {
-        if (new_cap == 0) {
-            std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
-            data_ = static_cast<gsl::owner<T*>>(nullptr);
-            return;
-        }
+        if (new_cap == 0)
+            free_();
 
         // NOLINTNEXTLINE(modernize-use-auto)
         gsl::owner<T*> ptr = static_cast<gsl::owner<T*>>(
@@ -88,6 +85,20 @@ class vec {
 
         data_ = ptr;
         capacity_ = new_cap;
+    }
+
+    /**
+     * @brief Free the internal array.
+     */
+    inline void
+    free_()
+    {
+        // Call destructors
+        for (size_t i = 0; i < size_; i++)
+            data_[i].~T();
+
+        std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
+        data_ = static_cast<gsl::owner<T*>>(nullptr);
     }
 
     /**
@@ -205,7 +216,7 @@ class vec {
             return *this;
 
         // Free our resources
-        std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
+        free_();
 
         // Leave the other in a valid state
         size_ = std::exchange(other.size_, 0);
@@ -220,7 +231,7 @@ class vec {
     /**
      * @brief Destroy the vec object. Frees the internal array.
      */
-    ~vec() noexcept { std::free(data_); } // NOLINT(cppcoreguidelines-no-malloc)
+    ~vec() noexcept { free_(); } // NOLINT(cppcoreguidelines-no-malloc)
 
 #pragma endregion
 
