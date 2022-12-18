@@ -97,6 +97,8 @@ TEST_CASE("Mutators", "[vec]")
     }
 }
 
+// NOLINTEND(modernize-loop-convert)
+
 TEST_CASE("Copy things", "[vec]")
 {
     ds::vec<unsigned> vec1{1, 2, 3, 4, 5};
@@ -135,7 +137,7 @@ TEST_CASE("Copy things", "[vec]")
 
     SECTION("Copy assignment operator - self assignment")
     {
-        vec1 = vec1;
+        vec1 = vec1; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
         CHECK(vec1.size() == 5);
         CHECK(vec1.size() == 5);
@@ -212,4 +214,37 @@ TEST_CASE("Move things", "[vec]")
     }
 }
 
-// NOLINTEND(modernize-loop-convert)
+TEST_CASE("Deconstructor", "[vec]")
+{
+    class dec_test {
+        bool* flag_;
+
+     public:
+        explicit dec_test(bool* flag) : flag_(flag) { *flag = false; }
+
+        dec_test(const dec_test& other) = default;
+        dec_test(dec_test&& other) = delete;
+
+        dec_test& operator=(const dec_test& other) = default;
+        dec_test& operator=(dec_test&& other) = delete;
+
+        ~dec_test() noexcept { *flag_ = true; }
+    };
+
+    ds::vec deconstructed(3, /*elem=*/false);
+    auto* arr = new ds::vec{
+        dec_test(deconstructed.data()),
+        dec_test(deconstructed.data() + 1),
+        dec_test(deconstructed.data() + 2),
+    };
+
+    REQUIRE(arr->size() == 3);
+    REQUIRE(arr->capacity() == 3);
+    for (bool& flag : deconstructed)
+        flag = false;
+
+    delete arr;
+
+    for (const bool& flag : deconstructed)
+        CHECK(flag);
+}
