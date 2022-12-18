@@ -97,4 +97,119 @@ TEST_CASE("Mutators", "[vec]")
     }
 }
 
+TEST_CASE("Copy things", "[vec]")
+{
+    ds::vec<unsigned> vec1{1, 2, 3, 4, 5};
+    unsigned* data1 = vec1.data();
+
+    REQUIRE(vec1.size() == 5);
+    REQUIRE(vec1.capacity() == 5);
+    REQUIRE(data1 != nullptr);
+
+    SECTION("Copy constructor")
+    {
+        ds::vec<unsigned> vec2(vec1);
+
+        CHECK(vec2.size() == 5);
+        CHECK(vec2.size() == 5);
+        CHECK(vec2.data() != nullptr);
+        CHECK(vec2.data() != data1);
+
+        for (size_t i = 0; i < vec2.size(); i++)
+            CHECK(vec2[i] == i + 1);
+    }
+
+    SECTION("Copy assignment operator")
+    {
+        ds::vec<unsigned> vec2;
+        vec2 = vec1;
+
+        CHECK(vec2.size() == 5);
+        CHECK(vec2.size() == 5);
+        CHECK(vec2.data() != nullptr);
+        CHECK(vec2.data() != data1);
+
+        for (size_t i = 0; i < vec2.size(); i++)
+            CHECK(vec2[i] == i + 1);
+    }
+
+    SECTION("Copy assignment operator - self assignment")
+    {
+        vec1 = vec1;
+
+        CHECK(vec1.size() == 5);
+        CHECK(vec1.size() == 5);
+        CHECK(vec1.data() != nullptr);
+        CHECK(vec1.data() == data1);
+
+        for (size_t i = 0; i < vec1.size(); i++)
+            CHECK(vec1[i] == i + 1);
+    }
+}
+
+TEST_CASE("Move things", "[vec]")
+{
+    SECTION("Move constructor")
+    {
+        ds::vec<unsigned> orig{1, 2, 3, 4, 5};
+        auto* data_ptr = orig.data();
+
+        REQUIRE(orig.size() == 5);
+        REQUIRE(orig.capacity() == 5);
+        REQUIRE(data_ptr != nullptr);
+
+        ds::vec<unsigned> cur(std::move(orig));
+
+        CHECK(cur.size() == 5);
+        CHECK(cur.capacity() == 5);
+        CHECK(cur.data() == data_ptr);
+
+        // NOLINTBEGIN(clang-analyzer-cplusplus.Move,bugprone-use-after-move)
+        CHECK(orig.empty());
+        CHECK(orig.capacity() == 0);
+        CHECK(orig.data() == nullptr);
+        // NOLINTEND(clang-analyzer-cplusplus.Move,bugprone-use-after-move)
+    }
+
+    SECTION("Move assignment operator")
+    {
+        ds::vec<unsigned> orig{1, 2, 3, 4, 5};
+        auto* data_ptr = orig.data();
+
+        REQUIRE(orig.size() == 5);
+        REQUIRE(orig.capacity() == 5);
+        REQUIRE(data_ptr != nullptr);
+
+        ds::vec<unsigned> cur;
+        cur = std::move(orig);
+
+        CHECK(cur.size() == 5);
+        CHECK(cur.capacity() == 5);
+        CHECK(cur.data() == data_ptr);
+
+        // NOLINTBEGIN(clang-analyzer-cplusplus.Move,bugprone-use-after-move)
+        CHECK(orig.empty());
+        CHECK(orig.capacity() == 0);
+        CHECK(orig.data() == nullptr);
+        // NOLINTEND(clang-analyzer-cplusplus.Move,bugprone-use-after-move)
+    }
+
+    SECTION("Move assignment operator - self assignment")
+    {
+        ds::vec<unsigned> orig{1, 2, 3, 4, 5};
+        auto* data_ptr = orig.data();
+
+        REQUIRE(orig.size() == 5);
+        REQUIRE(orig.capacity() == 5);
+        REQUIRE(data_ptr != nullptr);
+
+        // NOLINTNEXTLINE(clang-diagnostic-self-move)
+        orig = std::move(orig);
+
+        CHECK(orig.size() == 5);
+        CHECK(orig.capacity() == 5);
+        CHECK(orig.data() == data_ptr);
+    }
+}
+
 // NOLINTEND(modernize-loop-convert)

@@ -25,6 +25,7 @@ Checks: "\
   -hicpp-use-auto,\
   -google-readability-braces-around-statements,\
   -modernize-use-trailing-return-type,\
+  -hicpp-invalid-access-moved,\
   -misc-non-private-member-variables-in-classes\
   ,\
   -cppcoreguidelines-avoid-non-const-global-variables,\
