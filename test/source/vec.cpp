@@ -357,3 +357,43 @@ TEST_CASE("Insertion", "[vec]")
     CHECK(arr == ds::vec<unsigned>{0, 1, 555, 2, 3, 4});
     CHECK(arr.capacity() == 6);
 }
+
+TEST_CASE("Equality operators", "[vec]")
+{
+    // NOLINTBEGIN(readability-container-size-empty)
+    SECTION("Empty vector")
+    {
+        CHECK_FALSE(ds::vec{1, 2, 3} == ds::vec<int>(0));
+        CHECK(ds::vec{1, 2, 3} != ds::vec<int>(0));
+
+        CHECK(ds::vec<int>(0) == ds::vec<int>(0));
+        CHECK_FALSE(ds::vec<int>(0) != ds::vec<int>(0));
+    }
+    // NOLINTEND(readability-container-size-empty)
+
+    SECTION("Different sizes")
+    {
+        CHECK_FALSE(ds::vec{1, 2, 3} == ds::vec{1});
+        CHECK(ds::vec{1, 2, 3} != ds::vec{1});
+    }
+
+    SECTION("Same size different elements")
+    {
+        CHECK_FALSE(ds::vec{1, 2, 3} == ds::vec{1, 2, 4});
+        CHECK(ds::vec{1, 2, 3} != ds::vec{1, 2, 4});
+
+        CHECK_FALSE(ds::vec{1, 2, 3} == ds::vec{2, 2, 3});
+        CHECK(ds::vec{1, 2, 3} != ds::vec{2, 2, 3});
+    }
+
+    SECTION("Identical vectors")
+    {
+        ds::vec arr{1, 2, 3};
+
+        CHECK(arr == ds::vec{1, 2, 3});
+        CHECK_FALSE(arr != ds::vec{1, 2, 3});
+
+        CHECK(arr == arr);
+        CHECK_FALSE(arr != arr);
+    }
+}

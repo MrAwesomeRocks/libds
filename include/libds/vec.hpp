@@ -565,18 +565,29 @@ class vec {
 
 #pragma region "Operators"
 
-    friend bool
+    inline friend bool
     operator==(const ds::vec<T>& lhs, const ds::vec<T>& rhs)
     {
+        // Check if they are the same object
+        if (&lhs == &rhs)
+            return true;
+
+        // Check if the vectors have different sizes
         if (lhs.size_ != rhs.size_)
             return false;
 
+        // Finally, check each element
         for (size_t i = 0; i < lhs.size_; i++) {
             if (lhs[i] != rhs[i])
                 return false;
         }
-
         return true;
+    }
+
+    inline friend bool
+    operator!=(const ds::vec<T>& lhs, const ds::vec<T>& rhs)
+    {
+        return !(lhs == rhs);
     }
 
 #pragma endregion
