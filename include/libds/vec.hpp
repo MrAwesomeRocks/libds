@@ -40,6 +40,8 @@
 
 /**
  * @brief Namespace for the data structures library.
+ *
+ * Based off of the STL implementation, but with some improvements.
  */
 namespace ds {
 
@@ -51,8 +53,19 @@ namespace ds {
 template <class T>
 class vec {
  public:
+    /**
+     * @brief Unsigned integer type used for indicies.
+     */
     using size_type = std::size_t;
+
+    /**
+     * @brief A random access iterator to @p T.
+     */
     using iterator = T*;
+
+    /**
+     * @brief A constant random access iterator to @p T.
+     */
     using const_iterator = const T*;
 
  private:
@@ -78,7 +91,7 @@ class vec {
 
         // 1.5 * cap
         // https://web.archive.org/web/20150806162750/http://www.gahcep.com/cpp-internals-stl-vector-part-1/
-        // NOLINTNEXTLINE(hicpp-signed-bitwise): size_t is guaranteed to be unsigned
+        // NOLINTNEXTLINE(hicpp-signed-bitwise): size_type is guaranteed to be unsigned
         return cap + (cap >> 1);
     }
 
@@ -132,7 +145,7 @@ class vec {
     free_()
     {
         // Call destructors
-        for (size_t i = 0; i < size_; i++)
+        for (size_type i = 0; i < size_; i++)
             data_[i].~T();
 
         std::free(data_); // NOLINT(cppcoreguidelines-no-malloc)
@@ -599,9 +612,50 @@ class vec {
         return data_ + pos;
     }
 
+    /**
+     * @brief Insert @p count copies of @p elem at position @p pos.
+     *
+     * Can insert one past the end of the vector (at size());
+     *
+     * @param pos The position to insert the element in (zero indexed).
+     * @param elem The element to insert.
+     * @return An iterator pointing to the first element inserted.
+     */
+    inline iterator
+    insert(size_type pos, size_type count, const T& elem)
+    {
+        shift_(pos, count);
+
+        for (size_type i = pos; i < pos + count; i++)
+            data_[i] = elem;
+
+        return data_ + pos;
+    }
+
+    /**
+     * @brief Insert @p elems at position @p pos.
+     *
+     * Can insert one past the end of the vector (at size());
+     *
+     * @param pos The position to insert the element in (zero indexed).
+     * @param elems The elements to insert.
+     * @return An iterator pointing to the first element inserted.
+     */
+    inline iterator
+    insert(size_type pos, std::initializer_list<T> elems)
+    {
+        shift_(pos, elems.size());
+
+        auto* elem_data = std::data(elems);
+        for (size_type i = 0; i < elems.size(); i++)
+            data_[i + pos] = elem_data[i];
+
+        return data_ + pos;
+    }
+
 #pragma endregion
 
-#pragma region "Operators"
+#pragma region "Equality operators"
 
     inline friend bool
     operator==(const ds::vec<T>& lhs, const ds::vec<T>& rhs)
@@ -615,7 +669,7 @@ class vec {
             return false;
 
         // Finally, check each element
-        for (size_t i = 0; i < lhs.size_; i++) {
+        for (size_type i = 0; i < lhs.size_; i++) {
             if (lhs[i] != rhs[i])
                 return false;
         }

@@ -342,20 +342,48 @@ TEST_CASE("Insertion", "[vec]")
     REQUIRE(arr.size() == 3);
     REQUIRE(arr.capacity() == 3);
 
-    arr.insert(0, 0);
+    SECTION("Simple")
+    {
+        arr.insert(0, 0);
 
-    CHECK(arr == ds::vec<unsigned>{0, 1, 2, 3});
-    CHECK(arr.capacity() == 4);
+        CHECK(arr == ds::vec<unsigned>{0, 1, 2, 3});
+        CHECK(arr.capacity() == 4);
 
-    arr.insert(arr.size(), 4);
+        arr.insert(arr.size(), 4);
 
-    CHECK(arr == ds::vec<unsigned>{0, 1, 2, 3, 4});
-    CHECK(arr.capacity() == 6);
+        CHECK(arr == ds::vec<unsigned>{0, 1, 2, 3, 4});
+        CHECK(arr.capacity() == 6);
 
-    arr.insert(2, 555);
+        arr.insert(2, 555);
 
-    CHECK(arr == ds::vec<unsigned>{0, 1, 555, 2, 3, 4});
-    CHECK(arr.capacity() == 6);
+        CHECK(arr == ds::vec<unsigned>{0, 1, 555, 2, 3, 4});
+        CHECK(arr.capacity() == 6);
+    }
+
+    SECTION("Copied")
+    {
+        arr = {1, 2, 3};
+
+        REQUIRE(arr.size() == 3);
+
+        // Insert 4 fives at position 2
+        arr.insert(2, 4, 5);
+
+        CHECK(arr == ds::vec<unsigned>{1, 2, 5, 5, 5, 5, 3});
+        CHECK(arr.capacity() == 9);
+    }
+
+    SECTION("Init list")
+    {
+        arr = {1, 2, 3};
+
+        REQUIRE(arr.size() == 3);
+
+        arr.insert(2, {5, 6, 7, 0});
+
+        CHECK(arr == ds::vec<unsigned>{1, 2, 5, 6, 7, 0, 3});
+        CHECK(arr.capacity() == 9);
+    }
 }
 
 TEST_CASE("Equality operators", "[vec]")
